@@ -1,0 +1,19 @@
+# Ignore the Python virtual environment
+readsumenv/
+__pycache__/
+*.pyc
+
+# Ignore raw database files or backups containing massive data rows
+*.sql
+!schema.sql
+
+# Ignore local system files or IDE settings
+.vscode/
+.DS_Store
+
+# Ignore .env - passwords and user
+.env
+
+# Ignore outputs
+outputs/*
+!outputs/.gitkeep

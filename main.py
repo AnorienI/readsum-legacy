@@ -47,7 +47,7 @@ def main():
         print("❌ Nenhum arquivo encontrado.")
         return
 
-    caminhos_teste = caminhos_validos[:4]
+    caminhos_teste = caminhos_validos
     print(f"\n[+] Extraindo texto de {len(caminhos_teste)} livros...")
     textos = [epub_reader.extract_text(c) for c in caminhos_teste if epub_reader.extract_text(c)]
 

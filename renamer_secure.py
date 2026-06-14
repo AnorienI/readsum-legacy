@@ -3,7 +3,7 @@ import mysql.connector
 from pathlib import Path
 import re
 
-BOOKS_DIR = Path("/home/anorien/Área de trabalho/gutenberg_history")
+BOOKS_DIR = Path("/home/anorien/Área de trabalho/gutenberg")
 
 def limpar_nome_arquivo(nome):
     """Remove caracteres que o Linux ou o sistema de arquivos não gostam em nomes."""

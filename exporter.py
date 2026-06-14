@@ -1,6 +1,5 @@
 # exporter.py
 import csv
-from datetime import datetime
 from pathlib import Path
 
 RAIZ_PROJETO = Path(__file__).parent
@@ -15,14 +14,13 @@ def get_next_filename(base="readsum", ext=".csv"):
     return f"{base}_{i}{ext}"
 
 def exportar_top_palavras_csv(dados, nome_arquivo=None):
-    """Exporta dados para CSV na pasta outputs com nome automático se não fornecido."""
     PASTA_OUTPUTS.mkdir(parents=True, exist_ok=True)
 
     if not nome_arquivo:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        nome_arquivo = f"readsum_{timestamp}.csv"
+        nome_arquivo = get_next_filename()  # consistent incrementing instead of timestamp
 
     caminho_final = PASTA_OUTPUTS / nome_arquivo
+
 
     try:
         with open(caminho_final, mode='w', newline='', encoding='utf-8') as arquivo:

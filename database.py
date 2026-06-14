@@ -44,15 +44,12 @@ def get_books(query_name):
        
         resultados = cursor.fetchall()
 
-        print(resultados[:5])  # <--- Debug: Imprime os primeiros resultados para verificar o formato
-
 
         caminhos_validos = []
         
         # Listamos todos os arquivos .epub que realmente existem na sua pasta física
         arquivos_reais = list(BOOKS_DIR.glob("*.epub"))
         
-        print(f"[debug] Total de arquivos .epub físicos encontrados na pasta: {len(arquivos_reais)}")
         
         for gutenberg_id, title in resultados:
             id_str = str(gutenberg_id)

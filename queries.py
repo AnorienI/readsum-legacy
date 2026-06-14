@@ -1,24 +1,57 @@
 QUERIES = {
     "ancient": """
         SELECT gutenberg_id, title
-        FROM history_books_ancient
+        FROM ancient
+        LIMIT 100
     """,
 
+    "ancient_greek": """
+        SELECT gutenberg_id, title
+        FROM ancient
+        WHERE title LIKE '%Greek%'
+        OR title LIKE '%Greece%'
+        OR title LIKE '%Athens%'
+        OR title LIKE '%Plato%'
+        OR title LIKE '%Aristotle%'
+    """,
+
+    "ancient_roman": """
+        SELECT gutenberg_id, title
+        FROM ancient
+        WHERE title LIKE '%Roman%'
+        OR title LIKE '%Rome%'
+        OR title LIKE '%Caesar%'
+        OR title LIKE '%Cicero%'
+    """,
+
+    "ancient_pre1500": """
+        SELECT gutenberg_id, title
+        FROM ancient
+        WHERE publication_year < 1500
+    """,
+
+    "ancient_english": """
+        SELECT gutenberg_id, title
+        FROM ancient
+        WHERE language = 'English'
+        LIMIT 50
+    """,
+    
     "pre1900": """
         SELECT gutenberg_id, title
-        FROM history_books_ancient
+        FROM ancient
         WHERE publication_year < 1900
     """,
 
     "alexander": """
         SELECT gutenberg_id, title
-        FROM history_books_ancient
+        FROM ancient
         WHERE title LIKE '%Alexander%'
     """,
 
     "religious": """
         SELECT author, COUNT(*) AS book_count
-        FROM history_books_religious
+        FROM religious
         GROUP BY author
         HAVING COUNT(*) > 1
         ORDER BY book_count DESC;
@@ -27,7 +60,7 @@ QUERIES = {
     # books with known publication year, sorted chronologically
     "timeline": """
         SELECT gutenberg_id, title
-        FROM history_books_ancient
+        FROM ancient
         WHERE publication_year IS NOT NULL
         ORDER BY publication_year ASC
     """,
@@ -35,25 +68,25 @@ QUERIES = {
     # english books only
     "english": """
         SELECT gutenberg_id, title
-        FROM history_books_ancient
+        FROM ancient
         WHERE language = 'English'
     """,
 
     # cross-table: all books from all categories in one shot
     "all_history": """
-        SELECT gutenberg_id, title FROM history_books_ancient
+        SELECT gutenberg_id, title FROM ancient
         UNION
-        SELECT gutenberg_id, title FROM history_books_european
+        SELECT gutenberg_id, title FROM european
         UNION
-        SELECT gutenberg_id, title FROM history_books_general
+        SELECT gutenberg_id, title FROM general
         UNION
-        SELECT gutenberg_id, title FROM history_books_religious
+        SELECT gutenberg_id, title FROM religious
     """,
 
     # religious books pre-1800
     "religious_ancient": """
         SELECT gutenberg_id, title
-        FROM history_books_religious
+        FROM religious
         WHERE publication_year < 1800
         ORDER BY publication_year ASC
     """,
@@ -61,7 +94,7 @@ QUERIES = {
     # european books in languages other than English
     "european_multilang": """
         SELECT gutenberg_id, title
-        FROM history_books_european
+        FROM european
         WHERE language != 'English'
         AND language IS NOT NULL
         ORDER BY language

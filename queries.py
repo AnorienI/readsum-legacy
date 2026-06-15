@@ -113,7 +113,7 @@ QUERIES = {
         OR title LIKE '%Tertullian%'
     """,
 
-   "gnostics": """
+    "gnostics": """
         SELECT gutenberg_id, title FROM religious
         WHERE title LIKE '%Gnostic%'
         OR title LIKE '%Neoplatoni%'

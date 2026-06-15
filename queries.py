@@ -36,7 +36,7 @@ QUERIES = {
         WHERE language = 'English'
         LIMIT 50
     """,
-    
+
     "pre1900": """
         SELECT gutenberg_id, title
         FROM ancient
@@ -98,5 +98,43 @@ QUERIES = {
         WHERE language != 'English'
         AND language IS NOT NULL
         ORDER BY language
+    """,
+
+    "stoics": """
+        SELECT gutenberg_id, title FROM ancient
+        WHERE title LIKE '%Stoic%'
+        OR title LIKE '%Marcus Aurelius%'
+        OR title LIKE '%Epictetus%'
+        OR title LIKE '%Seneca%'
+        OR title LIKE '%Zeno%'
+        OR title LIKE '%mystic%'
+        OR title LIKE '%Hermetic%'
+        OR title LIKE '%Clement%'
+        OR title LIKE '%Tertullian%'
+    """,
+
+   "gnostics": """
+        SELECT gutenberg_id, title FROM religious
+        WHERE title LIKE '%Gnostic%'
+        OR title LIKE '%Neoplatoni%'
+        OR title LIKE '%Plotinus%'
+        OR title LIKE '%Origen%'
+    """,
+
+    "jena_romantics": """
+        SELECT gutenberg_id, title FROM european
+        WHERE title LIKE '%Schiller%'
+        OR title LIKE '%Novalis%'
+        OR title LIKE '%Schlegel%'
+        OR title LIKE '%Schelling%'
+        OR title LIKE '%Hegel%'
+        OR title LIKE '%Fichte%'
+    """,
+
+    "wittgenstein": """
+        SELECT gutenberg_id, title FROM european
+        WHERE title LIKE '%Wittgenstein%'
+        OR title LIKE '%Russell%'
+        OR title LIKE '%Frege%'
     """
 }

@@ -67,7 +67,7 @@ def palavras_mais_longas(lista_textos, n=20):
         if not texto:
             continue
         palavras = nltk.word_tokenize(texto.lower())
-        todas.update(p for p in palavras if p.isalpha() and len(p) > 4)
+        todas.update(p for p in palavras if p.isalpha() and len(p) > 4 and p.isascii())
 
     ordenadas = sorted(todas, key=len, reverse=True)[:n]
     # Returns (palavra, length) to fit the display loop in main.py

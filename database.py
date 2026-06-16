@@ -37,7 +37,7 @@ def get_books(query_name):
     try:
         cursor = connection.cursor()
 
-        query = QUERIES[query_name]
+        query = QUERIES[query_name]["sql"]
 
         cursor.execute(query)
 
@@ -79,3 +79,25 @@ def get_books(query_name):
             connection.close()
             
     return caminhos_validos
+
+
+def run_report(query_name):
+
+    connection = get_connection()
+
+    if not connection:
+        return []
+
+    try:
+        cursor = connection.cursor()
+
+        query = QUERIES[query_name]["sql"]
+
+        cursor.execute(query)
+
+        return cursor.fetchall()
+
+    finally:
+        if connection and connection.is_connected():
+            cursor.close()
+            connection.close()

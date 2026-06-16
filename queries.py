@@ -1,11 +1,17 @@
 QUERIES = {
-    "ancient": """
-        SELECT gutenberg_id, title
-        FROM ancient
-        LIMIT 100
-    """,
-
-    "ancient_greek": """
+    "ancient": {
+        "type": "corpus",
+        "sql": """
+            SELECT gutenberg_id, title
+            FROM ancient
+            LIMIT 100
+        """
+    },
+    
+    
+    "ancient_greek": {
+        "type": "corpus",
+        "sql": """
         SELECT gutenberg_id, title
         FROM ancient
         WHERE title LIKE '%Greek%'
@@ -13,67 +19,85 @@ QUERIES = {
         OR title LIKE '%Athens%'
         OR title LIKE '%Plato%'
         OR title LIKE '%Aristotle%'
-    """,
+    """},
 
-    "ancient_roman": """
+    "ancient_roman": {
+        "type": "corpus",
+        "sql": """
         SELECT gutenberg_id, title
         FROM ancient
         WHERE title LIKE '%Roman%'
         OR title LIKE '%Rome%'
         OR title LIKE '%Caesar%'
         OR title LIKE '%Cicero%'
-    """,
+    """},
 
-    "ancient_pre1500": """
+    "ancient_pre1500": {
+        "type": "corpus",
+        "sql": """
         SELECT gutenberg_id, title
         FROM ancient
         WHERE publication_year < 1500
-    """,
+    """},
 
-    "ancient_english": """
+    "ancient_english":  {
+        "type": "corpus",
+        "sql":"""
         SELECT gutenberg_id, title
         FROM ancient
         WHERE language = 'English'
         LIMIT 50
-    """,
+    """},
 
-    "pre1900": """
+    "pre1900": {
+        "type": "corpus",
+        "sql":"""
         SELECT gutenberg_id, title
         FROM ancient
         WHERE publication_year < 1900
-    """,
+    """},
 
-    "alexander": """
+    "alexander": {
+        "type": "corpus",
+        "sql":"""
         SELECT gutenberg_id, title
         FROM ancient
         WHERE title LIKE '%Alexander%'
-    """,
+    """},
 
-    "religious": """
-        SELECT author, COUNT(*) AS book_count
-        FROM religious
-        GROUP BY author
+    "religious-authors": {
+        "type": "report",
+        "sql": """
+            SELECT author, COUNT(*) AS book_count
+            FROM religious
+            GROUP BY author
         HAVING COUNT(*) > 1
         ORDER BY book_count DESC;
-    """,
+    """},
 
     # books with known publication year, sorted chronologically
-    "timeline": """
+    "timeline": {
+        "type": "corpus",
+        "sql": """
         SELECT gutenberg_id, title
         FROM ancient
         WHERE publication_year IS NOT NULL
         ORDER BY publication_year ASC
-    """,
+    """},
 
     # english books only
-    "english": """
-        SELECT gutenberg_id, title
-        FROM ancient
+    "english": {
+        "type": "corpus",
+        "sql": """
+            SELECT gutenberg_id, title
+            FROM ancient
         WHERE language = 'English'
-    """,
+    """},
 
     # cross-table: all books from all categories in one shot
-    "all_history": """
+    "all_history": {
+        "type": "corpus",
+        "sql":"""
         SELECT gutenberg_id, title FROM ancient
         UNION
         SELECT gutenberg_id, title FROM european
@@ -81,26 +105,33 @@ QUERIES = {
         SELECT gutenberg_id, title FROM general
         UNION
         SELECT gutenberg_id, title FROM religious
-    """,
+    """},
 
     # religious books pre-1800
-    "religious_ancient": """
-        SELECT gutenberg_id, title
-        FROM religious
-        WHERE publication_year < 1800
-        ORDER BY publication_year ASC
-    """,
+    "religious_ancient": {
+        "type": "corpus",
+        "sql": """
+            SELECT gutenberg_id, title
+            FROM religious
+            WHERE publication_year < 1800
+            ORDER BY publication_year ASC
+        """
+    },
 
     # european books in languages other than English
-    "european_multilang": """
-        SELECT gutenberg_id, title
-        FROM european
-        WHERE language != 'English'
-        AND language IS NOT NULL
-        ORDER BY language
-    """,
+    "european_multilang": {
+        "type": "corpus",
+        "sql": """
+            SELECT gutenberg_id, title
+            FROM european
+            WHERE language != 'English'
+            AND language IS NOT NULL
+            ORDER BY language
+    """},
 
-    "stoics": """
+    "stoics":  {
+        "type": "corpus",
+        "sql": """
         SELECT gutenberg_id, title FROM ancient
         WHERE title LIKE '%Stoic%'
         OR title LIKE '%Marcus Aurelius%'
@@ -111,17 +142,21 @@ QUERIES = {
         OR title LIKE '%Hermetic%'
         OR title LIKE '%Clement%'
         OR title LIKE '%Tertullian%'
-    """,
+    """},
 
-    "gnostics": """
+    "gnostics":  {
+"type": "corpus",
+        "sql":"""
         SELECT gutenberg_id, title FROM religious
         WHERE title LIKE '%Gnostic%'
         OR title LIKE '%Neoplatoni%'
         OR title LIKE '%Plotinus%'
         OR title LIKE '%Origen%'
-    """,
+    """},
 
-    "jena_romantics": """
+    "jena_romantics":  {
+        "type": "corpus",
+        "sql": """
         SELECT gutenberg_id, title FROM european
         WHERE title LIKE '%Schiller%'
         OR title LIKE '%Novalis%'
@@ -129,12 +164,14 @@ QUERIES = {
         OR title LIKE '%Schelling%'
         OR title LIKE '%Hegel%'
         OR title LIKE '%Fichte%'
-    """,
+    """},
 
-    "wittgenstein": """
-        SELECT gutenberg_id, title FROM european
-        WHERE title LIKE '%Wittgenstein%'
-        OR title LIKE '%Russell%'
+    "wittgenstein": {
+        "type": "corpus",
+        "sql": """
+            SELECT gutenberg_id, title FROM european
+            WHERE title LIKE '%Wittgenstein%'
+            OR title LIKE '%Russell%'
         OR title LIKE '%Frege%'
     """
-}
+}}

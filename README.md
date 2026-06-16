@@ -41,7 +41,7 @@ functions.
 
 ### Reporting
 
-* CSV export compatible with LibreOffice Calc and Excel
+* CSV export compatible with LibreOffice Calc, Excel and Google Sheets
 * Structured output for further analysis
 * Reusable query results
 

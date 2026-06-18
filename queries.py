@@ -68,7 +68,7 @@ QUERIES = {
     },
 
     "alexander": {
-        "type": "corpus",
+        "type": "report",
         "description": "Books specifically mentioning Alexander the Great or related Macedonian/Hellenistic history",
         "sql": """
             SELECT gutenberg_id, title

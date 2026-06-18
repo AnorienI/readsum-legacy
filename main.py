@@ -3,7 +3,7 @@ import os
 import logging
 from pathlib import Path
 
-# Configuração e Supressão de Logs do NLTK (Mantido do seu original)
+# Configuração e Supressão de Logs do NLTK
 os.environ['NLTK_DATA'] = '/home/anorien/nltk_data'
 import nltk
 nltk.data.path.append('/home/anorien/nltk_data')
@@ -16,7 +16,7 @@ import analysis
 import exporter
 from queries import QUERIES
 
-# Menu de opções original do NLTK (Usado apenas no fluxo 'report')
+# Menu de opções original do NLTK
 MENU_OPTIONS = {
     "1": ("Top 20 substantivos mais comuns",        lambda textos: analysis.contar_apenas_substantivos(textos, n=20)),
     "2": ("Top 20 verbos mais comuns",              lambda textos: analysis.contar_por_pos(textos, pos='VB', n=20)),
@@ -60,86 +60,91 @@ def main():
         print(f"❌ Query '{query_name}' não encontrada no arquivo queries.py.")
         return
 
-    # Identifica o tipo configurado para a query (padrão: corpus)
-    query_type = QUERIES[query_name].get("type", "corpus")
-
-    # 2. Busca inicial dos arquivos cadastrados e válidos
+    # 2. Busca todos os arquivos cadastrados e válidos (Retorna tuplas de caminho e título)
     caminhos_validos = database.get_books(query_name)
     if not caminhos_validos:
         print("❌ Nenhum arquivo físico correspondente foi encontrado.")
         return
 
-    # =================================================================
-    # FLUXO A: CORPUS (Apenas Banco de Dados, rápido e direto)
-    # =================================================================
-    if query_type == "corpus":
-        print(f"\n[+] Mapeamento de Corpus concluído para: '{query_name}'")
-        print(f"✅ Encontrados {len(caminhos_validos)} arquivos válidos vinculados no disco:")
-        print("-" * 60)
-        for path in caminhos_validos:
-            print(f"  -> {os.path.basename(path)}")
-        print("-" * 60)
-        return  # Encerra o script graciosamente aqui
+    print(f"\n[+] Executando: '{query_name}'")
+    print(f"✅ Encontrados {len(caminhos_validos)} arquivos válidos vinculados no disco.")
+    
+    # Listagem inicial dos livros encontrados com seus IDs e títulos reais
+    # Listagem inicial dos livros encontrados com seus IDs e títulos reais
+    print("-" * 75)
+    for livro in caminhos_validos:
+        # Verifica se o retorno é uma string pura (apenas o caminho do arquivo)
+        if isinstance(livro, str):
+            path = livro
+            # Como não veio título do banco, usamos o nome do arquivo limpo como título temporário
+            titulo = os.path.basename(path).replace(".epub", "").capitalize()
+        else:
+            # Se for uma tupla/lista do banco de dados, extrai com segurança
+            path = livro[-1]
+            titulo = livro[1] if len(livro) > 1 else os.path.basename(path).replace(".epub", "")
 
-    # =================================================================
-    # FLUXO B: REPORT (Processamento Textual com Extração e NLTK)
-    # =================================================================
-    elif query_type == "report":
-        # OTIMIZAÇÃO: Limita o processamento inicial para os 5 primeiros livros.
-        # Evita travamento completo da CPU se a lista de ePubs for gigante.
-        caminhos_teste = caminhos_validos[:5]
+        id_gutenberg = os.path.basename(path).replace(".epub", "")
+        print(f"  -> [{id_gutenberg:<6}] {titulo}")
+    print("-" * 75)
+
+    # 3. Extração de Texto de TODOS os livros encontrados (Sem limite de 5)
+    # 3. Extração de Texto de TODOS os livros encontrados
+    print(f"\n⏳ Extraindo texto de todos os {len(caminhos_validos)} livro(s)...")
+    
+    textos = []
+    for i, livro in enumerate(caminhos_validos, start=1):
+        # Mesma checagem segura para o caminho e título
+        if isinstance(livro, str):
+            path = livro
+            titulo = os.path.basename(path).replace(".epub", "").capitalize()
+        else:
+            path = livro[-1]
+            titulo = livro[1] if len(livro) > 1 else os.path.basename(path).replace(".epub", "")
         
-        print(f"\n[+] Analisando Relatório para: '{query_name}'")
-        print(f"⏳ Extraindo texto de {len(caminhos_teste)} livro(s) (Amostra de segurança)...")
+        print(f"  [{i}/{len(caminhos_validos)}] Processando: {titulo[:45]}...", end="", flush=True)
         
-        textos = []
-        for i, c in enumerate(caminhos_teste, start=1):
-            nome_arquivo = os.path.basename(c)
-            print(f"  [{i}/{len(caminhos_teste)}] Processando: {nome_arquivo}...", end="", flush=True)
-            
-            texto_extraido = epub_reader.extract_text(c)
-            if texto_extraido:
-                textos.append(texto_extraido)
-                print(" PRONTO!")
-            else:
-                print(" FALHOU!")
+        texto_extraido = epub_reader.extract_text(path)
+        if texto_extraido:
+            textos.append(texto_extraido)
+            print(" PRONTO!")
+        else:
+            print(" FALHOU!")
+    if not textos:
+        print("❌ Falha crítica: Nenhum texto válido pôde ser extraído dos ePubs.")
+        return
 
-        if not textos:
-            print("❌ Falha crítica: Nenhum texto válido pôde ser extraído.")
-            return
-
-        # Loop interativo do menu original do seu NLTK
-        while True:
-            opcao = exibir_menu(query_name)
+    # 4. Loop interativo universal do menu
+    while True:
+        opcao = exibir_menu(query_name)
+        
+        if opcao not in MENU_OPTIONS:
+            print("❌ Opção inválida.")
+            continue
             
-            if opcao not in MENU_OPTIONS:
-                print("❌ Opção inválida.")
-                continue
-                
-            label, func = MENU_OPTIONS[opcao]
+        label, func = MENU_OPTIONS[opcao]
+        
+        if func is None or opcao == "8":  # Sair
+            break
             
-            if func is None or opcao == "8":  # Sair
-                break
-                
-            print(f"\n⏳ Executando análise estatística: {label}...")
-            resultado = func(textos)
+        print(f"\n⏳ Executando análise estatística: {label}...")
+        resultado = func(textos)
+        
+        print(f"\n=== {label.upper()} ===")
+        
+        # Tratamento de exibição para formatos diferentes (Densidade Lexical vs Listas de Frequência)
+        if isinstance(resultado, list):
+            for item, freq in resultado:
+                print(f"  {item:<25} : {freq}")
             
-            print(f"\n=== {label.upper()} ===")
-            
-            # Tratamento de exibição para formatos diferentes (Densidade Lexical vs Listas de Frequência)
-            if isinstance(resultado, list):
-                for item, freq in resultado:
-                    print(f"  {item:<25} : {freq}")
-                
-                # Sistema de exportação CSV original
-                salvar = input("\nExportar resultado para CSV? (s/n): ").lower().strip()
-                if salvar == 's':
-                    nome = exporter.get_next_filename(base=f"readsum_{query_name}_{opcao}")
-                    exporter.exportar_top_palavras_csv(resultado, nome_arquivo=nome)
-            else:
-                # Exibição direta caso o retorno seja um valor único/float (Ex: Densidade Lexical)
-                print(f"  Resultado: {resultado}")
-                input("\nPressione Enter para continuar...")
+            # Sistema de exportação CSV original
+            salvar = input("\nExportar resultado para CSV? (s/n): ").lower().strip()
+            if salvar == 's':
+                nome = exporter.get_next_filename(base=f"readsum_{query_name}_{opcao}")
+                exporter.exportar_top_palavras_csv(resultado, nome_arquivo=nome)
+        else:
+            # Exibição direta caso o retorno seja um valor único/float (Ex: Densidade Lexical)
+            print(f"  Resultado: {resultado}")
+            input("\nPressione Enter para continuar...")
 
 if __name__ == "__main__":
     main()

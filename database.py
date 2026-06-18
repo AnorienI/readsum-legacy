@@ -4,18 +4,24 @@ from mysql.connector import Error
 from pathlib import Path
 import re
 from queries import QUERIES
+from dotenv import load_dotenv
+import os
 
-BOOKS_DIR = Path("/home/anorien/Área de trabalho/gutenberg")
+load_dotenv()
+
+# O Path.home() detecta automaticamente o diretório do usuário atual (/home/nome_do_usuario)
+BOOKS_DIR = Path.home() / "Área de trabalho" / "gutenberg"
 
 def get_connection():
     try:
         connection = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            password='',
-            database='history'
-        )
+            host=os.getenv('DB_HOST', 'localhost'),
+            user=os.getenv('DB_USER', 'root'),
+            password=os.getenv('DB_PASSWORD', ''),
+            database=os.getenv('DB_NAME', 'history')
+    )
         return connection
+
     except Error as e:
         print(f"Erro ao conectar ao MariaDB: {e}")
         return None

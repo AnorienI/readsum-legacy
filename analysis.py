@@ -1,13 +1,23 @@
 import re
 from collections import Counter
 import nltk
+import logging
 
 # Você só precisa rodar essas duas linhas UMA vez na vida para baixar os dicionários gramaticais
-nltk.download('punkt', quiet=True)
-nltk.download('averaged_perceptron_tagger', quiet=True)
-nltk.download('punkt_tab', quiet=True)
-nltk.download('averaged_perceptron_tagger_eng', quiet=True)# Baixa a versão em inglês mais recente para garantir
- 
+# Tenta carregar localmente primeiro. Se falhar, faz o download silencioso.
+try:
+    nltk.data.find('tokenizers/punkt')
+    nltk.data.find('taggers/averaged_perceptron_tagger')
+    nltk.data.find('tokenizers/punkt_tab')
+    nltk.data.find('taggers/averaged_perceptron_tagger_eng')
+except LookupError:
+    # Só tenta acessar a internet se algo estiver faltando
+    logging.getLogger('nltk').setLevel(logging.NOTSET) # abre logs temporariamente para o download
+    nltk.download('punkt', quiet=True)
+    nltk.download('averaged_perceptron_tagger', quiet=True)
+    nltk.download('punkt_tab', quiet=True)
+    nltk.download('averaged_perceptron_tagger_eng', quiet=True)
+    logging.getLogger('nltk').setLevel(logging.ERROR) # fecha os logs de novo
 
 def contar_apenas_substantivos(lista_textos, n=20):
     counter = Counter()

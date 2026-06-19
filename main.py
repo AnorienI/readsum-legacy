@@ -73,19 +73,37 @@ def main():
     # Listagem inicial dos livros encontrados com seus IDs e títulos reais
     print("-" * 75)
     for livro in caminhos_validos:
-        # Verifica se o retorno é uma string pura (apenas o caminho do arquivo)
+        # 1. Identifica a estrutura do retorno do banco
         if isinstance(livro, str):
             path = livro
-            # Como não veio título do banco, usamos o nome do arquivo limpo como título temporário
-            titulo = os.path.basename(path).replace(".epub", "").capitalize()
+            # Usa o nome do arquivo como título se não houver dados do banco
+            titulo = os.path.basename(path).replace(".epub", "").replace("_", " ").capitalize()
+            id_gutenberg = os.path.basename(path).replace(".epub", "")
         else:
-            # Se for uma tupla/lista do banco de dados, extrai com segurança
+            # Se o banco retorna (id, titulo, caminho) ou estrutura similar:
+            # Vamos assumir o padrão: primeiro elemento é o ID, segundo o Título, último o Caminho
+            id_gutenberg = str(livro[0])
+            titulo = livro[1] if len(livro) > 1 else os.path.basename(livro[-1]).replace(".epub", "")
             path = livro[-1]
-            titulo = livro[1] if len(livro) > 1 else os.path.basename(path).replace(".epub", "")
 
-        id_gutenberg = os.path.basename(path).replace(".epub", "")
-        print(f"  -> [{id_gutenberg:<6}] {titulo}")
+        # Se por acaso o banco não tiver título e ele vier igual ao ID, tentamos extrair do nome do arquivo físico
+        if titulo == id_gutenberg:
+            titulo = os.path.basename(path).replace(".epub", "").replace("_", " ").capitalize()
+
+        # 2. Trunca o título se ele passar de 50 caracteres
+        limite = 50
+        if len(titulo) > limite:
+            titulo_formatado = titulo[:limite-3] + "..."
+        else:
+            titulo_formatado = titulo
+
+        # 3. Impressão alinhada e elegante
+        print(f"  -> [{id_gutenberg:<8}] {titulo_formatado}")
+        
     print("-" * 75)
+
+    # 3. Extração de Texto de TODOS os livros encontrados
+    print(f"\n⏳ Extraindo texto de todos os {len(caminhos_validos)} livro(s)...")
 
     # 3. Extração de Texto de TODOS os livros encontrados (Sem limite de 5)
     # 3. Extração de Texto de TODOS os livros encontrados

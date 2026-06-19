@@ -34,28 +34,20 @@ def limpar_texto(texto):
     return re.sub(r'[^a-zA-Z0-9]', '', texto).lower()
 
 def get_books(query_name):
-
     connection = get_connection()
-
     if not connection:
         return []
 
     try:
         cursor = connection.cursor()
-
         query = QUERIES[query_name]["sql"]
-
         cursor.execute(query)
-
-       
+        
         resultados = cursor.fetchall()
-
-
         caminhos_validos = []
         
         # Listamos todos os arquivos .epub que realmente existem na sua pasta física
         arquivos_reais = list(BOOKS_DIR.glob("*.epub"))
-        
         
         for gutenberg_id, title in resultados:
             id_str = str(gutenberg_id)
@@ -74,8 +66,11 @@ def get_books(query_name):
                     break
             
             # Só adicionamos à lista se o arquivo REALMENTE existir no HD
+            # Dentro do loop de validação do arquivo na get_books():
             if arquivo_encontrado and arquivo_encontrado.exists():
-                caminhos_validos.append(str(arquivo_encontrado))
+                # Garante a ordem exata: 0 = ID, 1 = Título do banco, 2 = Caminho do arquivo
+                caminhos_validos.append((str(id_str), str(title), str(arquivo_encontrado)))
+            
                 
     except Error as e:
         print(f"Erro ao executar a query: {e}")
@@ -85,7 +80,6 @@ def get_books(query_name):
             connection.close()
             
     return caminhos_validos
-
 
 def run_report(query_name):
 

@@ -235,7 +235,7 @@ QUERIES = {
             UNION ALL
             SELECT 'European Literary/Philosophy', COUNT(*) FROM european
             UNION ALL
-            SELECT 'General History Collection', COUNT(*) FROM general
+            SELECT 'General History Collection', COUNT(*) FROM medieval
             UNION ALL
             SELECT 'Religious & Spiritual Texts', COUNT(*) FROM religious;
         """

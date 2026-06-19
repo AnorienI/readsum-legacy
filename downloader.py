@@ -3,14 +3,22 @@ import requests
 import mysql.connector
 from pathlib import Path
 import time
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 DOWNLOAD_DIR = Path("/home/anorien/Área de trabalho/gutenberg")
 DOWNLOAD_DIR.mkdir(exist_ok=True)
 
-db = mysql.connector.connect(
-    host='localhost', user='root', password='', database='history'
-)
-cursor = db.cursor()
+connection = mysql.connector.connect(
+            host=os.getenv('DB_HOST', 'localhost'),
+            user=os.getenv('DB_USER', 'root'),
+            password=os.getenv('DB_PASSWORD', ''),
+            database=os.getenv('DB_NAME', 'history')
+    )
+
+cursor = connection.cursor()
 
 tables = ['ancient', 'american', 'european', 'religious', 'medieval', 'universities', 'archaeology']
 
